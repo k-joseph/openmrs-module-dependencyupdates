@@ -1,0 +1,5 @@
+FUNCTIONALITIES TO BE SUPPORTED BY THE DEPENDENCY UPDATES MODULE
+
+- Add support for openmrs-core
+- Add support for the user to define any other module and run the check
+- Persist updates (dependency name, dependency version, previous dependency version, current dependeny stable version) to the database and also project (project name eg openmrs-core, project version, project root directory, project data directory, dependency updates logfile, maven home directory)
