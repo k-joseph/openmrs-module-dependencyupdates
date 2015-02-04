@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.dependencyupdates;
 
+import java.util.Date;
+
 public class DependencyUpdatesProperties {
 	
 	public DependencyUpdatesProperties(String rootDir, String logFile, String mvnHome) {
@@ -28,6 +30,10 @@ public class DependencyUpdatesProperties {
 	private String mvnHome;
 	
 	private String projectDataDir;
+	
+	private String projectName;
+	
+	private Date lastCheckedOn;
 	
 	public String getProjectRootDir() {
 		return projectRootDir;
@@ -74,5 +80,21 @@ public class DependencyUpdatesProperties {
 	
 	public void setProjectDataDir(String projectDataDir) {
 		this.projectDataDir = projectDataDir;
+	}
+	
+	public String getProjectName() {
+		return projectName;
+	}
+	
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+	
+	public Date getLastCheckedOn() {
+		return lastCheckedOn;
+	}
+	
+	public void setLastCheckedOn(Date lastCheckedOn) {
+		this.lastCheckedOn = lastCheckedOn;
 	}
 }

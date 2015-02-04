@@ -4,17 +4,77 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs.module.dependencyupdates">
-
-<!--
-	<class name="DependencyUpdates"
-		table="${project.parent.artifactId}_DependencyUpdates">
-		<id name="id" type="int" column="id" unsaved-value="0">
-			<generator class="native" />
-		</id>
-		<discriminator column="id" insert="false" />
-		<property name="uuid" type="java.lang.String" column="uuid"
-			length="38" unique="true" />
-	</class>
--->
-
+		
+		<class name="DependencyUpdate"
+                table="${project.parent.artifactId}_dependency_update">
+                <id name="id" type="int" column="id" unsaved-value="0">
+                        <generator class="native" />
+                </id>
+                <discriminator column="id" insert="false" />
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+                <property name="groupId" type="java.lang.String" column="group_id" length="255" />
+                <property name="artifactId" type="java.lang.String" column="artifact_id" length="255" />
+                <property name="currentVersion" type="java.lang.String" column="current_version" length="255" />
+                <property name="availableUpdateVersion" type="java.lang.String" column="available_update_version" length="255" />
+        </class>
+        
+        <class name="Project"
+                table="${project.parent.artifactId}_project">
+                <id name="id" type="int" column="id" unsaved-value="0">
+                        <generator class="native" />
+                </id>
+                <discriminator column="id" insert="false" />
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+                <property name="projectName" type="java.lang.String" column="name" length="255" />
+                <property name="description" type="java.lang.String" column="description" length="255" />
+                <property name="dependencyUpdatesLogFileName" type="java.lang.String" column="log_file_name" length="255" />
+                <property name="mvnHome" type="java.lang.String" column="maven_home" length="255" />
+                <property name="dataDirectory" type="java.lang.String" column="data_directory" length="255" />
+                <property name="lastCheckedOn" type="java.lang.String" column="last_checked_on" length="255" />
+        </class>
+        
 </hibernate-mapping>
+
+<hibernate-mapping package="org.openmrs.module.dependencyupdates.mail">
+		
+		<class name="SubScriber"
+                table="${project.parent.artifactId}_subscriber">
+                <id name="id" type="int" column="id" unsaved-value="0">
+                        <generator class="native" />
+                </id>
+                <discriminator column="id" insert="false" />
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+                <property name="name" type="java.lang.String" column="name" length="255" />
+                <property name="emailAddress" type="java.lang.String" column="email_address" length="255" />
+                <property name="organization" type="java.lang.String" column="organization" length="255" />
+        </class>
+        
+        <class name="Sender"
+                table="${project.parent.artifactId}_sender">
+                <id name="id" type="int" column="id" unsaved-value="0">
+                        <generator class="native" />
+                </id>
+                <discriminator column="id" insert="false" />
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+                <property name="name" type="java.lang.String" column="name" length="255" />
+                <property name="emailAddress" type="java.lang.String" column="email_address" length="255" />
+                <property name="encryptedPassword" type="java.lang.String" column="password" length="255" />
+        </class>
+        
+        <class name="Email"
+                table="${project.parent.artifactId}_email">
+                <id name="id" type="int" column="id" unsaved-value="0">
+                        <generator class="native" />
+                </id>
+                <discriminator column="id" insert="false" />
+                <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+                <property name="projectName" type="java.lang.String" column="name" length="255" />
+                <property name="to" type="java.lang.String" column="to" length="255" />
+                <property name="from" type="java.lang.String" column="from" length="255" />
+                <property name="subject" type="java.lang.String" column="subject" length="255" />
+                <property name="email" type="text" column="email" length="255000000000" />
+                <property name="host" type="text" column="host" length="255" />
+        </class>
+        
+</hibernate-mapping>
+

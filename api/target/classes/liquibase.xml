@@ -9,4 +9,76 @@
         for a list of supported elements and attributes
     -->
     
+    <changeSet author="k-joseph" id="05012015-0023">
+        <comment>Create the dependencyupdates_dependency_update table</comment>
+        <createTable tableName="dependencyupdates_dependency_update">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="uuid" type="char(38)" />
+            <column name="group_id" type="varchar(255)" />
+            <column name="artifact_id" type="varchar(255)" />
+            <column name="current_version" type="varchar(255)" />
+            <column name="available_update_version" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="k-joseph" id="05012015-0027">
+        <comment>Create the dependencyupdates_project table</comment>
+        <createTable tableName="dependencyupdates_project">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="uuid" type="char(38)" />
+            <column name="name" type="varchar(255)" />
+            <column name="description" type="varchar(255)" />
+            <column name="log_file_name" type="varchar(255)" />
+            <column name="maven_home" type="varchar(255)" />
+            <column name="data_directory" type="varchar(255)" />
+            <column name="last_checked_on" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="k-joseph" id="05012015-0032">
+        <comment>Create the dependencyupdates_subscriber table</comment>
+        <createTable tableName="dependencyupdates_subscriber">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="uuid" type="char(38)" />
+            <column name="name" type="varchar(255)" />
+            <column name="email_address" type="varchar(255)" />
+            <column name="organization" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="k-joseph" id="05012015-0034">
+        <comment>Create the dependencyupdates_sender table</comment>
+        <createTable tableName="dependencyupdates_sender">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="uuid" type="char(38)" />
+            <column name="name" type="varchar(255)" />
+            <column name="email_address" type="varchar(255)" />
+            <column name="password" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="k-joseph" id="05012015-0035">
+        <comment>Create the dependencyupdates_email table</comment>
+        <createTable tableName="dependencyupdates_email">
+            <column autoIncrement="true" name="id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="uuid" type="char(38)" />
+            <column name="name" type="varchar(255)" />
+            <column name="to" type="varchar(255)" />
+            <column name="from" type="varchar(255)" />
+            <column name="subject" type="varchar(255)" />
+            <column name="email" type="text" />
+            <column name="host" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+    
 </databaseChangeLog>

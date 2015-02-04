@@ -85,6 +85,7 @@ public class DisplayDependencyVersionUpdates {
 		try {
 			setMvnCommand(getDependencyUpdateProperties().getMvnVersionDisplayDependencyUpdatesFinalCmd());
 			p = Runtime.getRuntime().exec(getMvnCommand());
+			
 			System.out.println("Successfully sav(ing/ed) log at: " + getDependencyUpdatesLogFile());
 		}
 		catch (IOException e) {
@@ -115,7 +116,7 @@ public class DisplayDependencyVersionUpdates {
 	 * @param logFilePath
 	 */
 	public ArrayList<String> readLogFileLineByLine(String logFilePath) {
-		ArrayList<String> versionLines = new ArrayList<String>();// Open the file
+		ArrayList<String> versionLinesAndLastRun = new ArrayList<String>();// Open the file
 		FileInputStream fstream = null;
 		
 		try {
@@ -163,22 +164,24 @@ public class DisplayDependencyVersionUpdates {
 						versionLinePartB = null;
 					}
 					if (matchAnyWhere) {
-						versionLines.add(strLine);
+						versionLinesAndLastRun.add(strLine);
+					}
+					if (strLine.matches("(?i).*Finished at:.*")) {
+						versionLinesAndLastRun.add(strLine);
 					}
 				}
 			}
 			//Close the input stream
 			br.close();
-			System.out.println();
-			System.out.println();
+			System.out.println("\n\n");
 			System.out.println("===============================================================================");
-			System.out.println();
-			System.out.println();
+			System.out.println("\n\n");
+			
 		}
 		catch (IOException e) {
 			System.out.println("Error generated" + e);
 		}
-		return versionLines;
+		return versionLinesAndLastRun;
 	}
 	
 	public String[] splitLineUsingSpace(String line) {
@@ -197,27 +200,49 @@ public class DisplayDependencyVersionUpdates {
 		JSONObject allVersionDetails = new JSONObject();
 		JSONObject versionDetails = new JSONObject();
 		ArrayList<String> logVersionLines = readLogFileLineByLine(logFilePath);
+		String lastChecked = "";
 		
 		for (int i = 0; i < logVersionLines.size(); i++) {
-			String linesubStrings[] = splitLineUsingSpace(logVersionLines.get(i));
-			
-			for (int j = 0; j < linesubStrings.length; j++) {
-				if (j == 0) {}//Do nothing since 0 contains [INFO]
-				else if (j == 1) {
-					String[] groupAndArtifactIds = linesubStrings[j].split(":");
-					if (groupAndArtifactIds.length == 2) {
-						versionDetails.put("group_id", groupAndArtifactIds[0]);
-						versionDetails.put("artifact_id", groupAndArtifactIds[1]);
-					}
-				} else if (j == 3) { //skips "....................................." and contains something like: 2.2.3
-					versionDetails.put("current_version", linesubStrings[j]);
-				} else if (j == 5) { //contains something like: 4.1.4.RELEASE
-					versionDetails.put("new_version", linesubStrings[j]);
-					
+			int lastIndex = logVersionLines.size() - 1;
+			//TODO debug here to confirm
+			if (i == lastIndex) {
+				String lastCheckedDateTime[] = splitLineUsingSpace(logVersionLines.get(i));
+				for (int j = 0; j < lastCheckedDateTime.length; j++) {
+					if (j == 3)
+						lastChecked += lastCheckedDateTime[j] + " ";
+					if (j == 4)
+						lastChecked += lastCheckedDateTime[j] + " ";
+					if (j == 5)
+						lastChecked += lastCheckedDateTime[j] + " ";
+					if (j == 6)
+						lastChecked += lastCheckedDateTime[j] + " ";
+					if (j == 7)
+						lastChecked += lastCheckedDateTime[j] + " ";
+					if (j == 8)
+						lastChecked += lastCheckedDateTime[j] + " ";
 				}
-				int num = i + 1;
-				if (!versionDetails.isEmpty()) {
-					allVersionDetails.put("dep_update_" + num, versionDetails);
+				allVersionDetails.put("last_checked", lastChecked);
+			} else {
+				String linesubStrings[] = splitLineUsingSpace(logVersionLines.get(i));
+				
+				for (int j = 0; j < linesubStrings.length; j++) {
+					if (j == 0) {}//Do nothing since 0 contains [INFO]
+					else if (j == 1) {
+						String[] groupAndArtifactIds = linesubStrings[j].split(":");
+						if (groupAndArtifactIds.length == 2) {
+							versionDetails.put("group_id", groupAndArtifactIds[0]);
+							versionDetails.put("artifact_id", groupAndArtifactIds[1]);
+						}
+					} else if (j == 3) { //skips "....................................." and contains something like: 2.2.3
+						versionDetails.put("current_version", linesubStrings[j]);
+					} else if (j == 5) { //contains something like: 4.1.4.RELEASE
+						versionDetails.put("new_version", linesubStrings[j]);
+						
+					}
+					int num = i + 1;
+					if (!versionDetails.isEmpty()) {
+						allVersionDetails.put("dep_update_" + num, versionDetails);
+					}
 				}
 			}
 		}
@@ -231,6 +256,27 @@ public class DisplayDependencyVersionUpdates {
 	
 	public String getMvnCommand() {
 		return mvnCommand;
+	}
+	
+	public static String extractDependecyUpdateEmail(JSONObject json) {
+		String depUpdate = "\nDependency; (groupId:artifactId) ***** CurrentVersion in the pom file ***** Newly available version\n\n";
+		JSONObject jsonDepUpdate;
+		String lastchecked;
+		int lastIndex = json.size() - 1;
+		
+		for (int i = 0; i < json.size(); i++) {
+			if (i == lastIndex) {
+				lastchecked = json.getString("last_checked");
+				depUpdate += "\nLast checked on: " + lastchecked;
+			} else {
+				String jsonObjectIndex = "dep_update_" + (i + 1);
+				jsonDepUpdate = json.getJSONObject(jsonObjectIndex);
+				depUpdate += jsonDepUpdate.getString("group_id") + ":" + jsonDepUpdate.getString("artifact_id") + " "
+				        + " ***** " + jsonDepUpdate.getString("current_version") + " ***** "
+				        + jsonDepUpdate.getString("new_version") + "\n";
+			}
+		}
+		return depUpdate;
 	}
 	
 	public void setMvnCommand(String mvnCommand) {

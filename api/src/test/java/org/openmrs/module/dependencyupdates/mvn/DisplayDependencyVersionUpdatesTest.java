@@ -20,25 +20,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 import net.sf.json.JSONObject;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.module.dependencyupdates.DependencyUpdatesProperties;
+import org.openmrs.module.dependencyupdates.mail.EmailVersionUpdatesToSubScribers;
+import org.openmrs.module.dependencyupdates.mail.SubScriber;
 import org.openmrs.test.Verifies;
 
+@Ignore
+//Takes long time running but passes all the tests 
 public class DisplayDependencyVersionUpdatesTest {
 	
 	//TODO Instead of hard-coding this out rather use the @DependencyUpdatesProperties object
-	private String openmrsRoot = "/media/KJoseph/Projects/openMRS/openmrs-core-master/openmrs-core/";
+	private String openmrsRoot = "/media/media3/Projects/openMRS/openmrs-core-master/openmrs-core/";
 	
-	private String mavenShRun = "sh /home/k-joseph/MyProgs/apache-maven-3.0.4/bin/mvn";
+	private String mavenShRun = "sh /home/user/MyProgs/apache-maven-3.0.4/bin/mvn";
 	
 	DisplayDependencyVersionUpdates updates = new DisplayDependencyVersionUpdates(new DependencyUpdatesProperties(
-	        "/media/KJoseph/Projects/openMRS/openmrs-core-master/openmrs-core/",
-	        "/media/KJoseph/Projects/openMRS/Modules/mine/dependencyUpdates.log",
-	        "/home/k-joseph/MyProgs/apache-maven-3.0.4/"));
+	        "/media/media3/Projects/openMRS/openmrs-core-master/openmrs-core/",
+	        "/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log",
+	        "/home/user/MyProgs/apache-maven-3.0.4/"));
 	
 	public void test2() throws IOException, InterruptedException {
 		
@@ -53,7 +59,7 @@ public class DisplayDependencyVersionUpdatesTest {
 		}
 		
 		System.setOut(new PrintStream(new FileOutputStream(
-		        "/media/KJoseph/Projects/openMRS/Modules/mine/dependencyUpdates.log")));
+		        "/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log")));
 		
 		copy(p.getInputStream(), System.out);
 		p.waitFor();
@@ -76,7 +82,7 @@ public class DisplayDependencyVersionUpdatesTest {
 	@Test
 	@Verifies(value = "should read the log file on the file system and extract out of it the details of the project including the new and previous versions", method = "readVersionsFromLogFile()")
 	public void displayDependencyVersionUpdates_readVersionsFromLogFile() {
-		//updates.readVersionsFromLogFile("/media/KJoseph/Projects/openMRS/Modules/mine/dependencyUpdates.log");
+		//updates.readVersionsFromLogFile("/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log");
 	}
 	
 	/**
@@ -85,7 +91,7 @@ public class DisplayDependencyVersionUpdatesTest {
 	@Test
 	@Verifies(value = "should run maven display versions update command save logs to file system", method = "runMvnVersionCmdAndSaveLogsToFileSystem()")
 	public void displayDependencyVersionUpdates_runMvnVersionCmdAndSaveLogsToFileSystem() {
-		File file = new File("/media/KJoseph/Projects/openMRS/Modules/mine/dependencyUpdates.log");
+		File file = new File("/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log");
 		if (file.exists()) {
 			file.delete();
 		}
@@ -110,9 +116,33 @@ public class DisplayDependencyVersionUpdatesTest {
 	@Verifies(value = "should slit out real dependency version details out the logs", method = "splitLogVersionLinesToDisplayVersions(String)")
 	public void displayDependencyVersionUpdates_splitLogVersionLinesToDisplayVersions() {
 		JSONObject returnedVersionUpdates = updates
-		        .splitLogVersionLinesToDisplayVersions("/media/KJoseph/Projects/openMRS/Modules/mine/dependencyUpdates.log");
+		        .splitLogVersionLinesToDisplayVersions("/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log");
 		
 		Assert.assertNotNull(returnedVersionUpdates);
 		System.out.println(returnedVersionUpdates);
+	}
+	
+	@Test
+	public void emailVersionUpdatesToSubScribers_writetheDependencyUpdatesEmail() {
+		JSONObject returnedVersionUpdates = updates
+		        .splitLogVersionLinesToDisplayVersions("/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log");
+		EmailVersionUpdatesToSubScribers email = new EmailVersionUpdatesToSubScribers("host", "events@openmrs.org",
+		        new ArrayList<SubScriber>(), "subject");
+		System.out.println("Email is: \n" + email.writetheDependencyUpdatesEmail(returnedVersionUpdates, "openmrs-core"));
+	}
+	
+	@Test
+	public void emailVersionUpdatesToSubScribers_sendEmailToSubScribers() {
+		JSONObject returnedVersionUpdates = updates
+		        .splitLogVersionLinesToDisplayVersions("/media/media3/Projects/openMRS/Modules/mine/dependencyUpdates.log");
+		ArrayList<SubScriber> subSribers = new ArrayList<SubScriber>();
+		
+		subSribers.add(new SubScriber("name1 name2", "test@example.com", "OpenMRS"));
+		
+		EmailVersionUpdatesToSubScribers email = new EmailVersionUpdatesToSubScribers("127.0.1.1", "events@openmrs.org",
+		        subSribers, "Some dependencies in your project may need updating!");
+		boolean isSent = email.sendEmailToSubScribers(email.writetheDependencyUpdatesEmail(returnedVersionUpdates,
+		    "openmrs-core"));
+		Assert.assertTrue(isSent);
 	}
 }

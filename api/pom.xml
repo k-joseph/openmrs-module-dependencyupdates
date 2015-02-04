@@ -14,62 +14,85 @@
 	<description>API project for DependencyUpdates</description>
 
 	<dependencies>
-	
-		<!-- 
-		Add other dependencies from parent's pom:
-		<dependency>
-			<groupId>org.other.library</groupId> 
-			<artifactId>library-name</artifactId>
-		</dependency> 
-		-->
 
-		
-		 <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
-        </dependency>
+		<!-- Add other dependencies from parent's pom: <dependency> <groupId>org.other.library</groupId> 
+			<artifactId>library-name</artifactId> </dependency> -->
+
+
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
 
 		<!-- Begin OpenMRS core -->
-		
+
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
 			<type>jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openmrs.web</groupId>
 			<artifactId>openmrs-web</artifactId>
 			<type>jar</type>
 		</dependency>
-				
+
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openmrs.web</groupId>
 			<artifactId>openmrs-web</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openmrs.test</groupId>
 			<artifactId>openmrs-test</artifactId>
 			<type>pom</type>
 			<scope>test</scope>
 		</dependency>
-				
+
 		<!-- End OpenMRS core -->
+
+
+		<!-- Email or Mail server dependencies -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 		
+		
+		<!-- For password encryption -->
+		<dependency>
+			<groupId>org.jasypt</groupId>
+			<artifactId>jasypt</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+
 	</dependencies>
-	
+
 	<build>
 		<resources>
 			<resource>
